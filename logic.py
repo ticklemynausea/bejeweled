@@ -4,11 +4,8 @@ import board
 import player
 import sys
 
-
-
 class Logic(object):
 
-		
 	def __init__(self, *args, **kwargs):
 		def getplayer(name):
 			playeroptions = {
@@ -26,7 +23,7 @@ class Logic(object):
 					 	player.GreedyEnergyVSEntropy(self.moves, self.energythreshold)					 	
 						}
 			return  playeroptions[name]		
-			
+
 		def getlistofmoves(rows, columns):
 			moves = []
 			#horizontals
@@ -40,7 +37,7 @@ class Logic(object):
 
 			#print "For this %sx%s board, there are a total of %s possible moves " % (rows, columns, len(moves))
 			return moves	
-		
+
 		self.pauses = kwargs.get('pause', False)
 		self.shorten = kwargs.get('shorten', False)
 		boardfile = kwargs.get('boardfile', None)
@@ -56,9 +53,8 @@ class Logic(object):
 			self.moves = getlistofmoves(columns, rows)
 			self.board = board.Board(columns, rows, colours)
 
-							 		
 			self.player	= getplayer(kwargs.get('player'))	
-			
+
 			print "**************************************"
 			print "* Welcome to AI Bejeweled"
 			print "* Rules:"			
@@ -66,7 +62,7 @@ class Logic(object):
 			print "*\tUsing IA Agent %s " % self.player
 			print "*\tWill terminate after %s moves" % (self.limit)
 			print "**************************************"	
-			
+
 			self.board.sanitize()
 
 		else:
@@ -76,10 +72,10 @@ class Logic(object):
 			except Exception as e:
 				print "Error: ", e
 				sys.exit(0)
-			
+
 			self.moves = getlistofmoves(self.board.rows, self.board.columns)
 			self.player	= getplayer(kwargs.get('player'))		
-				
+
 			print "**************************************"
 			print "* Welcome to AI Bejeweled"
 			print "* Rules:"		
@@ -89,27 +85,25 @@ class Logic(object):
 			print "*\tWill terminate after %s moves" % (self.limit)			
 			print "**************************************"								
 
-
-		
 	# método play implementa a logica de jogo como uma máquina de estados.
 	# os sub métodos são o código implementado por cada estado
 	# o resto do código trata das transições entre estados
 	# e passagem de argumentos
-	
+
 	def play(self):
 		def begin_iteration():
 			print "***********************"
 			print "* begin iteration ", self.iteration
 			print "***********************"
 			print self.board.state
-				
+
 		def state_move():
 			move = self.player.getmove(self.board)
 
 			if (move == None):
 				return True
 			else:	
-			
+
 				result = self.board.play(move)
 
 				print "Move selected: ", move
@@ -132,7 +126,7 @@ class Logic(object):
 					print self.board.state
 
 			return exploded
-				
+
 		def state_gravity():		
 			#GRAVITY
 			gravities = 0
@@ -142,7 +136,7 @@ class Logic(object):
 				if not self.shorten:
 					print "Board state: after gravity"
 					print self.board.state
-		
+
 		def state_refill():	
 			(refill,_) = self.board.refill()
 			if not self.shorten:
@@ -150,7 +144,7 @@ class Logic(object):
 				print refill
 				print "Refilled:"
 				print self.board.state
-			
+
 		self.iteration = 1
 		count = 0
 		chain = 0
@@ -159,10 +153,10 @@ class Logic(object):
 		score = 0
 		#STATES
 		BEGIN, MOVE, EXPLODE, GRAVITY, REFILL, TERMINATE_FORCIBLY = range(6)
-		
+
 		while self.iteration <= self.limit:	
 			begin_iteration()
-			
+
 			self.state = MOVE
 			while self.state != BEGIN:
 				if (self.state == MOVE):		
@@ -205,25 +199,19 @@ class Logic(object):
 						print "Local Chain: %s\tJewels: %s: %s\tScore: %s" % (chain, jewels, sum(jewels), score)			
 						print "Total Chain: %s\tJewels: %s\tScore: %s" % (totalchain, totalcount, self.player.score)
 						self.state = BEGIN
-					
-				
-			
+
 			if (self.state == TERMINATE_FORCIBLY):					
 				break
-	
 
 			self.iteration += 1
-			
+
 			if (self.pauses):
 				raw_input("Press enter to continue.")
-	
 
 		print "****************************************************************"
 		print "* Simulation terminated after %s moves" % (self.iteration - 1)
 		print "****************************************************************"	
 		print "* Total Chain: %s\tJewels: %s\tScore: %s" % (totalchain, totalcount, self.player.score)
 		print "****************************************************************"		
-		
+
 		return (self.iteration-1,totalchain, totalcount, self.player.score)
-		
-			

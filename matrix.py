@@ -12,34 +12,29 @@ class Matrix(object):
 		cols = len(matrix[0])
 		rows = len(matrix)
 		m = Matrix(cols, rows)
-				
+
 		for i in range(rows):
 			for j in range(cols):
 				m.matrix[i][j] = matrix[i][j]
-		
+
 		return m
-		
+
 	def __init__(self, cols, rows, colors = None):
 		self.cols = cols
 		self.rows = rows
 		self.matrix = [[0] * cols for _ in range(0, rows)]
-		
+
 		if colors is not None:
 			for i in range(rows):
 				for j in range(cols):
 					self.matrix[i][j] = random.choice(range(1, colors+1))
 
-
 	def setitem(self, col, row, v):
 		self.matrix[col][row] = v
- 
- 
- 	
+
 	def getitem(self, col, row):
 		return self.matrix[col][row]
 
- 		
- 
 	def __repr__(self):
 #		def linerepr(line):
 #			outStr = ""
@@ -49,9 +44,9 @@ class Matrix(object):
 #				else:
 #					outStr += colored("%s " % i, self.cmap[i], self.bmap[i])
 #			return "[%s]" % outStr
-#				
+#
 #		outStr = ""
-#		
+#
 #		for i in range(self.rows):
 #		    outStr += '%s\n' % (linerepr(self.matrix[i]))
 
@@ -65,24 +60,24 @@ class Matrix(object):
 					outStr += "  "
 				else:
 					outStr += colored("%s " % c, self.cmap[c], self.bmap[c])
-					
+
 			outStr += "]\n"
 		outStr += "   "
 		for i in range(0, self.cols):
 			outStr += "%s " % i
 		outStr += "\n"
 		return outStr
-		
+
 	def markrepr(self, moves):
-					
+
 		markers = [[0] * self.cols for _ in range(0, self.rows)]
-		
+
 		for move in moves:
 			coord_x1 = move[1]
 			coord_y1 = move[0]
-			
+
 			markers[coord_y1][coord_x1] = 1
-			
+
 		outStr = ""
 		for i in range(self.rows-1, -1, -1):
 			outStr += "%s [" % i
@@ -93,20 +88,17 @@ class Matrix(object):
 					if c == 0:
 						outStr += "!!"
 					else:
-						outStr += colored("!!", 'white', self.bmap[c], ['bold'])					
+						outStr += colored("!!", 'white', self.bmap[c], ['bold'])
 				else:
 					if c == 0:
 						outStr += "  "
 					else:
 						outStr += colored("%s " % c, self.cmap[c], self.bmap[c])
 			outStr += "]\n"
-			
+
 		outStr += "   "
 		for i in range(0, self.cols):
 			outStr += "%s " % i
 		outStr += "\n"
-		
+
 		return outStr
-		
-		
-			
