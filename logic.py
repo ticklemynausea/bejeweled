@@ -3,33 +3,47 @@
 import board
 import player
 import sys
+import curses
 
 class Logic(object):
 
   def __init__(self, *args, **kwargs):
+
     def getplayer(name):
+
       playeroptions = {
-           'BestScore':
-            player.BestScore(self.moves, self.depth),
-           'BestEnergy':
-            player.BestEnergy(self.moves, self.depth),
-           'BestScoreBetterEnergy':
-            player.BestScoreBetterEnergy(self.moves, self.depth, self.minenergy),
-           'EnergyVSEntropy':
-             player.EnergyVSEntropy(self.moves, self.depth, self.energythreshold),
-           'EnergyVSEntropyReversed':
-             player.EnergyVSEntropyReversed(self.moves, self.depth, self.energythreshold),           
-           'GreedyEnergyVSEntropy':
-             player.GreedyEnergyVSEntropy(self.moves, self.energythreshold)           
-            }
-      return  playeroptions[name]
+
+       'BestScore':
+          player.BestScore(self.moves, self.depth),
+
+       'BestEnergy':
+          player.BestEnergy(self.moves, self.depth),
+
+       'BestScoreBetterEnergy':
+          player.BestScoreBetterEnergy(self.moves, self.depth, self.minenergy),
+
+       'EnergyVSEntropy':
+          player.EnergyVSEntropy(self.moves, self.depth, self.energythreshold),
+
+       'EnergyVSEntropyReversed':
+          player.EnergyVSEntropyReversed(self.moves, self.depth, self.energythreshold),
+
+       'GreedyEnergyVSEntropy':
+          player.GreedyEnergyVSEntropy(self.moves, self.energythreshold)
+
+      }
+
+      return playeroptions[name]
 
     def getlistofmoves(rows, columns):
+
       moves = []
+
       #horizontals
       for i_a in range(0, rows):
         for j_a in range(0, columns-1):
           moves.append(((i_a, j_a), (i_a, j_a+1)))
+
       #verticals
       for i_a in range(0, rows-1):
         for j_a in range(0, columns):
@@ -91,7 +105,9 @@ class Logic(object):
   # e passagem de argumentos
 
   def play(self):
+
     def begin_iteration():
+
       print "***********************"
       print "* begin iteration ", self.iteration
       print "***********************"
@@ -122,8 +138,8 @@ class Logic(object):
         if not self.shorten:
           print "Patterns:"
           print patterns
-          print "Board state: before gravity"
-          print self.board.state
+          #print "Board state: before gravity"
+          #print self.board.state
 
       return exploded
 
@@ -132,10 +148,10 @@ class Logic(object):
       gravities = 0
       while not self.board.gravity():
         gravities += 1
-      if (gravities > 0):
-        if not self.shorten:
-          print "Board state: after gravity"
-          print self.board.state
+      #if (gravities > 0):
+      #  if not self.shorten:
+      #    print "Board state: after gravity"
+      #    print self.board.state
 
     def state_refill():
       (refill,_) = self.board.refill()
