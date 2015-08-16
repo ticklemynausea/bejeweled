@@ -68,6 +68,7 @@ parser.add_option(
 group_player = OptionGroup(parser, "Player Agent Settings")
 
 playerchoices = [
+  "Human",
   "BestScore",
   "BestEnergy",
   "BestScoreBetterEnergy",

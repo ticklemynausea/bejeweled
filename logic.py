@@ -13,6 +13,9 @@ class Logic(object):
 
       playeroptions = {
 
+       'Human':
+          player.Human(self.moves, self.name, self.inputStream),
+
        'BestScore':
           player.BestScore(self.moves, self.depth),
 
@@ -62,25 +65,20 @@ class Logic(object):
     boardfile = kwargs.get('boardfile', None)
     refillfile = kwargs.get('refillfile', None)
 
+    # Human Player
+    self.name = None
+    self.inputStream = sys.stdin
+
+    # generate a new game
     if boardfile is None:
       columns = kwargs.get('columns')
       rows = kwargs.get('rows')
       colours = kwargs.get('colours')
       self.moves = getListOfPossibleMoves(columns, rows)
       self.board = board.Board(columns, rows, colours)
-
-      self.player  = getPlayer(kwargs.get('player'))
-
-      output.log("**************************************", module = 'Logic')
-      output.log("* Welcome to AI Bejeweled", module = 'Logic')
-      output.log("* Rules:", module = 'Logic')
-      output.log("*\t%sx%sx%s (%s possible moves)" % (columns, rows, colours, len(self.moves)), module = 'Logic')
-      output.log("*\tUsing IA Agent %s " % self.player, module = 'Logic')
-      output.log("*\tWill terminate after %s moves" % (self.limit), module = 'Logic')
-      output.log("**************************************", module = 'Logic')
-
       self.board.sanitize()
 
+    # load a saved board
     else:
       try:
         self.board = board.Board.LoadBoard(boardfile)
@@ -90,16 +88,18 @@ class Logic(object):
         sys.exit(0)
 
       self.moves = getListOfPossibleMoves(self.board.rows, self.board.columns)
-      self.player  = getPlayer(kwargs.get('player'))
 
-      output.log("**************************************", module = 'Logic')
-      output.log("* Welcome to AI Bejeweled", module = 'Logic')
-      output.log("* Rules:", module = 'Logic')
+    self.player  = getPlayer(kwargs.get('player'))
+
+    output.log("**************************************", module = 'Logic')
+    output.log("* Welcome to AI Bejeweled", module = 'Logic')
+    output.log("* Rules:", module = 'Logic')
+    if boardfile is not None:
       output.log("*\tUsing board from %s and refill from %s " % (boardfile, refillfile), module = 'Logic')
-      output.log("*\t%sx%sx%s (%s possible moves)" % (self.board.columns, self.board.rows, self.board.colors, len(self.moves)), module = 'Logic')
-      output.log("*\tUsing IA Agent %s " % self.player, module = 'Logic')
-      output.log("*\tWill terminate after %s moves" % (self.limit), module = 'Logic')
-      output.log("**************************************", module = 'Logic')
+    output.log("*\t%sx%sx%s (%s possible moves)" % (self.board.columns, self.board.rows, self.board.colors, len(self.moves)), module = 'Logic')
+    output.log("*\tUsing IA Agent %s " % self.player, module = 'Logic')
+    output.log("*\tWill terminate after %s moves" % (self.limit), module = 'Logic')
+    output.log("**************************************", module = 'Logic')
 
   # método play implementa a logica de jogo como uma máquina de estados.
   # os sub métodos são o código implementado por cada estado
@@ -123,13 +123,13 @@ class Logic(object):
         return True
       else:
 
-        result = self.board.makeMove(move)
         output.log("Move selected: %s " % str(move), module = 'Logic')
+        output.log(self.board.state.reprConsoleMarkMoves(list(move)), module = 'Logic', printModule = False)
+        result = self.board.makeMove(move)
+
         if result is False:
             output.log("Player asked me to perform an invalid move.", module = 'Logic')
-            output.log("Probably he is a path follower. Please ignore this.", module = 'Logic')
-        else:
-          output.log(self.board.state.reprConsoleMarkMoves(list(move)), module = 'Logic', printModule = False)
+            output.log("Probably he is a human. Doing nothing.", module = 'Logic')
 
         return False
 
