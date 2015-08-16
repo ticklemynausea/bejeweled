@@ -49,7 +49,7 @@ class Logic(object):
         for j_a in range(0, columns):
           moves.append(((i_a, j_a), (i_a+1, j_a)))
 
-      #output.log("For this %sx%s board, there are a total of %s possible moves " % (rows, columns, len(moves)))
+      #output.log("For this %sx%s board, there are a total of %s possible moves " % (rows, columns, len(moves)), module = 'Logic')
       return moves
 
     self.pauses = kwargs.get('pause', False)
@@ -71,13 +71,13 @@ class Logic(object):
 
       self.player  = getPlayer(kwargs.get('player'))
 
-      output.log("**************************************")
-      output.log("* Welcome to AI Bejeweled")
-      output.log("* Rules:")
-      output.log("*\t%sx%sx%s (%s possible moves)" % (columns, rows, colours, len(self.moves)))
-      output.log("*\tUsing IA Agent %s " % self.player)
-      output.log("*\tWill terminate after %s moves" % (self.limit))
-      output.log("**************************************")
+      output.log("**************************************", module = 'Logic')
+      output.log("* Welcome to AI Bejeweled", module = 'Logic')
+      output.log("* Rules:", module = 'Logic')
+      output.log("*\t%sx%sx%s (%s possible moves)" % (columns, rows, colours, len(self.moves)), module = 'Logic')
+      output.log("*\tUsing IA Agent %s " % self.player, module = 'Logic')
+      output.log("*\tWill terminate after %s moves" % (self.limit), module = 'Logic')
+      output.log("**************************************", module = 'Logic')
 
       self.board.sanitize()
 
@@ -86,20 +86,20 @@ class Logic(object):
         self.board = board.Board.LoadBoard(boardfile)
         self.board.refillboard = board.Board.LoadRefill(refillfile)
       except Exception as e:
-        output.log("Error: ", e)
+        output.log("Error: ", e, module = 'Logic')
         sys.exit(0)
 
       self.moves = getListOfPossibleMoves(self.board.rows, self.board.columns)
       self.player  = getPlayer(kwargs.get('player'))
 
-      output.log("**************************************")
-      output.log("* Welcome to AI Bejeweled")
-      output.log("* Rules:")
-      output.log("*\tUsing board from %s and refill from %s " % (boardfile, refillfile))
-      output.log("*\t%sx%sx%s (%s possible moves)" % (self.board.columns, self.board.rows, self.board.colors, len(self.moves)))
-      output.log("*\tUsing IA Agent %s " % self.player)
-      output.log("*\tWill terminate after %s moves" % (self.limit))
-      output.log("**************************************")
+      output.log("**************************************", module = 'Logic')
+      output.log("* Welcome to AI Bejeweled", module = 'Logic')
+      output.log("* Rules:", module = 'Logic')
+      output.log("*\tUsing board from %s and refill from %s " % (boardfile, refillfile), module = 'Logic')
+      output.log("*\t%sx%sx%s (%s possible moves)" % (self.board.columns, self.board.rows, self.board.colors, len(self.moves)), module = 'Logic')
+      output.log("*\tUsing IA Agent %s " % self.player, module = 'Logic')
+      output.log("*\tWill terminate after %s moves" % (self.limit), module = 'Logic')
+      output.log("**************************************", module = 'Logic')
 
   # método play implementa a logica de jogo como uma máquina de estados.
   # os sub métodos são o código implementado por cada estado
@@ -110,10 +110,10 @@ class Logic(object):
 
     def stateBegin():
 
-      output.log("***********************")
-      output.log("* begin iteration ", self.iteration)
-      output.log("***********************")
-      output.log(self.board.state)
+      output.log("***********************", module = 'Logic')
+      output.log("* begin iteration %s " %  self.iteration, module = 'Logic')
+      output.log("***********************", module = 'Logic')
+      output.logBoard(self.board.state, module = 'Logic')
 
     def stateMove():
       move = self.player.getMove(self.board)
@@ -123,13 +123,12 @@ class Logic(object):
       else:
 
         result = self.board.makeMove(move)
-
-        output.log("Move selected: ", move)
+        output.log("Move selected: %s " % str(move), module = 'Logic')
         if result is False:
-            output.log("Player asked me to perform an invalid move.")
-            output.log("Probably he is a path follower. Please ignore this.")
+            output.log("Player asked me to perform an invalid move.", module = 'Logic')
+            output.log("Probably he is a path follower. Please ignore this.", module = 'Logic')
         else:
-          output.log(self.board.state.reprConsoleMarkMoves(list(move)))
+          output.log(self.board.state.reprConsoleMarkMoves(list(move)), module = 'Logic')
 
         return False
 
@@ -138,10 +137,10 @@ class Logic(object):
       (patterns, exploded) = self.board.explodePatterns()
       if (exploded != 0):
         if not self.shorten:
-          output.log("Patterns:")
-          output.log(patterns)
-          #output.log("Board state: before gravity")
-          #output.log(self.board.state)
+          output.log("Patterns:", module = 'Logic')
+          output.log(patterns, module = 'Logic')
+          #output.log("Board state: before gravity", module = 'Logic')
+          #output.log(self.board.state, module = 'Logic')
 
       return exploded
 
@@ -152,16 +151,16 @@ class Logic(object):
         gravities += 1
       #if (gravities > 0):
       #  if not self.shorten:
-      #    output.log("Board state: after gravity")
-      #    output.log(self.board.state)
+      #    output.log("Board state: after gravity", module = 'Logic')
+      #    output.log(self.board.state, module = 'Logic')
 
     def stateRefill():
       (refill,_) = self.board.refillBoard()
       if not self.shorten:
-        output.log("Refill:")
-        output.log(refill)
-        output.log("Refilled:")
-        output.log(self.board.state)
+        output.log("Refill:", module = 'Logic')
+        output.log(refill, module = 'Logic')
+        output.log("Refilled:", module = 'Logic')
+        output.log(self.board.state, module = 'Logic')
 
     self.iteration = 1
     count = 0
@@ -186,8 +185,8 @@ class Logic(object):
           jewels = []
           result = stateMove()
           if result:
-            output.log("Terminal state achieved in iteration %s.\nScore: %s: " % (self.iteration, self.player.score))
-            output.log(self.board.state)
+            output.log("Terminal state achieved in iteration %s.\nScore: %s: " % (self.iteration, self.player.score), module = 'Logic')
+            output.log(self.board.state, module = 'Logic')
             self.state = STATE_TERMINATE
             break
 
@@ -215,8 +214,8 @@ class Logic(object):
           if self.board.hasOnes(patterns):
             self.state = STATE_EXPLODE
           else:
-            output.log("Local Chain: %s\tJewels: %s: %s\tScore: %s" % (chain, jewels, sum(jewels), score))
-            output.log("Total Chain: %s\tJewels: %s\tScore: %s" % (totalchain, totalcount, self.player.score))
+            output.log("Local Chain: %s\tJewels: %s: %s\tScore: %s" % (chain, jewels, sum(jewels), score), module = 'Logic')
+            output.log("Total Chain: %s\tJewels: %s\tScore: %s" % (totalchain, totalcount, self.player.score), module = 'Logic')
             self.state = STATE_BEGIN
 
       if (self.state == STATE_TERMINATE):
@@ -227,10 +226,10 @@ class Logic(object):
       if (self.pauses):
         raw_input("Press enter to continue.")
 
-    output.log("****************************************************************")
-    output.log("* Simulation terminated after %s moves" % (self.iteration - 1))
-    output.log("****************************************************************")
-    output.log("* Total Chain: %s\tJewels: %s\tScore: %s" % (totalchain, totalcount, self.player.score))
-    output.log("****************************************************************")
+    output.log("****************************************************************", module = 'Logic')
+    output.log("* Simulation terminated after %s moves" % (self.iteration - 1), module = 'Logic')
+    output.log("****************************************************************", module = 'Logic')
+    output.log("* Total Chain: %s\tJewels: %s\tScore: %s" % (totalchain, totalcount, self.player.score), module = 'Logic')
+    output.log("****************************************************************", module = 'Logic')
 
     return (self.iteration-1,totalchain, totalcount, self.player.score)

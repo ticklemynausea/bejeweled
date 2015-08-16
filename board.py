@@ -69,7 +69,7 @@ class Board(object):
   #until it is 'sane', and safe to use at the beginning of the game.
   def sanitize(self, verbose=True):
     if verbose:
-      output.log("Sanitizing board...")
+      output.log("Sanitizing board...", module = 'Board')
 
     def testrefillBoard(refill):
       for i in range(0, self.columns):
@@ -89,7 +89,7 @@ class Board(object):
       donesanitizing = testrefillBoard(self.refillBoard())
 
     if verbose:
-      output.log("Done sanitizing.")
+      output.log("Done sanitizing.", module = 'Board')
 
   #returns a matrix of marked patterns
   #when the same color is three or more times in a row
@@ -154,9 +154,9 @@ class Board(object):
     for i in range(0, realrows):
       for j in range(0, realcolumns):
         if (i + 1 < realrows):
-          #output.log("(%s < %s) (%s < %s)" % (i+1, realrows, j, realcolumns))
-          #output.log(len(self.state.matrix), "==", realrows)
-          #output.log(len(self.state.matrix[i+1]), "==", realcolumns)
+          #output.log("(%s < %s) (%s < %s)" % (i+1, realrows, j, realcolumns), module = 'Board')
+          #output.log(len(self.state.matrix), "==", realrows, module = 'Board')
+          #output.log(len(self.state.matrix[i+1]), "==", realcolumns, module = 'Board')
           if (self.state.matrix[i][j] == 0) and (self.state.matrix[i+1][j] != 0):
             shiftColumn(i, j)
             return False
@@ -214,8 +214,8 @@ class Board(object):
   #  - the move
   #  - the score caused
   def makeMoveAndReturnNewBoard(self, move):
-    #output.log(move)
-    #output.log(self.rows, self.columns)
+    #output.log(move, module = 'Board')
+    #output.log(self.rows, self.columns, module = 'Board')
     #raw_input()
     board = Board(self.columns, self.rows, self.colors, self.state)
     if (board.makeMove(move)):

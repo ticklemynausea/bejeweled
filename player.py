@@ -65,7 +65,7 @@ class GreedyEnergyVSEntropy(Player):
     return "Greedy: Energy VS Entropy (EnergyThreshold: %s) " % (self.energythreshold)
 
   def getMove(self, board):
-    output.log("Selecting move...")
+    output.log('Player', "Selecting move...", module = 'Player')
     tree = self.getGameTree(board, 1)
     energy = len(tree.children)
 
@@ -75,19 +75,19 @@ class GreedyEnergyVSEntropy(Player):
       return None
 
     if energy < self.energythreshold:
-      output.log("Energy %s is lower than %s, so I'll play near the bottom" %  (energy, self.energythreshold))
+      output.log("Energy %s is lower than %s, so I'll play near the bottom" %  (energy, self.energythreshold), module = 'Player')
       move1 = min(moves, key = lambda x : x[0][0]) #choose nearest to the top
       move2 = min(moves, key = lambda x : x[1][0])
       move = min(move1, move2)
     else:
-      output.log("Energy %s is higher or equal to %s, so I'll play near the top" %  (energy, self.energythreshold))
+      output.log("Energy %s is higher or equal to %s, so I'll play near the top" %  (energy, self.energythreshold), module = 'Player')
       move1 = max(moves, key = lambda x : x[0][0]) #choose nearest to the top
       move2 = max(moves, key = lambda x : x[1][0])
       move = max(move1, move2)
 
-    output.log(move)
+    output.log(move, module = 'Player')
 
-    output.log("Move is ", move)
+    output.log("Move is ", move, module = 'Player')
     return move
 
 """ What """
@@ -105,7 +105,7 @@ class EnergyVSEntropyReversed(Player):
 
   def getPath(self, tree):
 
-    #output.log(bestyet.score)
+    #output.log(module = 'Player', bestyet.score)
     def depthFirst(node, energy, path):
 
       if node.parent is not None:
@@ -127,17 +127,17 @@ class EnergyVSEntropyReversed(Player):
     return depthFirst(tree, 0, ())
 
   def getMove(self, board):
-    output.log("Calculating tree up to %s levels..." % self.depth)
+    output.log("Calculating tree up to %s levels..." % self.depth, module = 'Player')
     tree = self.getGameTree(board, self.depth)
-    output.log("Calculating best path...")
+    output.log("Calculating best path...", module = 'Player')
     (totalenergy, path) = self.getPath(tree)
 
     energyperdepthlevel =  (totalenergy / self.depth)
 
     if len(path) > 0:
       if energyperdepthlevel >= self.energythreshold:
-        output.log("Energy per depth level is %s, above the threshold of %s" % (energyperdepthlevel, self.energythreshold))
-        output.log("Will attempt to preserve this and play near the top")
+        output.log("Energy per depth level is %s, above the threshold of %s" % (energyperdepthlevel, self.energythreshold), module = 'Player')
+        output.log("Will attempt to preserve this and play near the top", module = 'Player')
 
         moves = [x.board.move for x in tree.children]
 
@@ -147,8 +147,8 @@ class EnergyVSEntropyReversed(Player):
         return move
 
       else:
-        output.log("Energy per depth level is %s, below the threshold of %s" % (energyperdepthlevel, self.energythreshold))
-        output.log("Path is %s (Energy: %s). Will take first step and recalculate." % (path, totalenergy))
+        output.log("Energy per depth level is %s, below the threshold of %s" % (energyperdepthlevel, self.energythreshold), module = 'Player')
+        output.log('Player', "Path is %s (Energy: %s). Will take first step and recalculate." % (path, totalenergy), module = 'Player')
         move = path[0]
 
         return move
@@ -168,7 +168,7 @@ class EnergyVSEntropy(Player):
 
   def getPath(self, tree):
 
-    #output.log(bestyet.score)
+    #output.log(module = 'Player', bestyet.score)
     def depthFirst(node, energy, path):
 
       if node.parent is not None:
@@ -190,17 +190,17 @@ class EnergyVSEntropy(Player):
     return depthFirst(tree, 0, ())
 
   def getMove(self, board):
-    output.log("Calculating tree up to %s levels..." % self.depth)
+    output.log("Calculating tree up to %s levels..." % self.depth, module = 'Player')
     tree = self.getGameTree(board, self.depth)
-    output.log("Calculating best path...")
+    output.log("Calculating best path...", module = 'Player')
     (totalenergy, path) = self.getPath(tree)
 
     energyperdepthlevel =  (totalenergy / self.depth)
 
     if len(path) > 0:
       if energyperdepthlevel < self.energythreshold:
-        output.log("Energy per depth level is %s, below the threshold of %s" % (energyperdepthlevel, self.energythreshold))
-        output.log("Will attempt to get lucky and play near the bottom")
+        output.log("Energy per depth level is %s, below the threshold of %s" % (energyperdepthlevel, self.energythreshold), module = 'Player')
+        output.log("Will attempt to get lucky and play near the bottom", module = 'Player')
 
         moves = [x.board.move for x in tree.children]
 
@@ -210,8 +210,8 @@ class EnergyVSEntropy(Player):
         return move
 
       else:
-        output.log("Energy per depth level is %s, above the threshold of %s" % (energyperdepthlevel, self.energythreshold))
-        output.log("Path is %s (Energy: %s). Will take first step and recalculate." % (path, totalenergy))
+        output.log("Energy per depth level is %s, above the threshold of %s" % (energyperdepthlevel, self.energythreshold), module = 'Player')
+        output.log("Path is %s (Energy: %s). Will take first step and recalculate." % (path, totalenergy), module = 'Player')
         move = path[0]
 
         return move
@@ -232,7 +232,7 @@ class BestScoreBetterEnergy(Player):
 
   def getPath(self, tree):
 
-    #output.log(bestyet.score)
+    #output.log(module = 'Player', bestyet.score)
     def depthFirst(node, score, energy, path):
 
       if node.parent is not None:
@@ -265,11 +265,11 @@ class BestScoreBetterEnergy(Player):
     return depthFirst(tree, 0, 0, ())
 
   def getMove(self, board):
-    output.log("Calculating tree up to %s levels..." % self.depth)
+    output.log("Calculating tree up to %s levels..." % self.depth, module = 'Player')
     tree = self.getGameTree(board, self.depth)
-    output.log("Calculating path...")
+    output.log("Calculating path...", module = 'Player')
     (score, energy, path) = self.getPath(tree)
-    output.log("Path is %s (Score: %s) (Energy: %s). Will take first step and recalculate." % (path, score, energy))
+    output.log("Path is %s (Score: %s) (Energy: %s). Will take first step and recalculate." % (path, score, energy), module = 'Player')
     if len(path) > 0:
       return path[0]
     else:
@@ -287,7 +287,7 @@ class BestEnergy(Player):
 
   def getPath(self, tree):
 
-    #output.log(bestyet.score)
+    #output.log(module = 'Player', bestyet.score)
     def depthFirst(node, energy, path):
 
       if node.parent is not None:
@@ -309,11 +309,11 @@ class BestEnergy(Player):
     return depthFirst(tree, 0, ())
 
   def getMove(self, board):
-    output.log("Calculating tree up to %s levels..." % self.depth)
+    output.log("Calculating tree up to %s levels..." % self.depth, module = 'Player')
     tree = self.getGameTree(board, self.depth)
-    output.log("Calculating path...")
+    output.log("Calculating path...", module = 'Player')
     (energy, path) = self.getPath(tree)
-    output.log("Path is %s (Energy: %s). Will take first step and recalculate." % (path, energy))
+    output.log("Path is %s (Energy: %s). Will take first step and recalculate." % (path, energy), module = 'Player')
     if len(path) > 0:
       return path[0]
     else:
@@ -331,7 +331,7 @@ class BestScore(Player):
 
   def getPath(self, tree):
 
-    #output.log(bestyet.score)
+    #output.log(module = 'Player', bestyet.score)
     def depthFirst(node, score, path):
 
       if node.parent is not None:
@@ -353,11 +353,11 @@ class BestScore(Player):
     return depthFirst(tree, 0, ())
 
   def getMove(self, board):
-    output.log("Calculating tree up to %s levels..." % self.depth)
+    output.log("Calculating tree up to %s levels..." % self.depth, module = 'Player')
     tree = self.getGameTree(board, self.depth)
-    output.log("Calculating path...")
+    output.log("Calculating path...", module = 'Player')
     (score, path) = self.getPath(tree)
-    output.log("Path is %s (Score: %s). Will take first step and recalculate." % (path, score))
+    output.log("Path is %s (Score: %s). Will take first step and recalculate." % (path, score), module = 'Player')
     if len(path) > 0:
       return path[0]
     else:

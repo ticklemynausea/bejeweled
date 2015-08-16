@@ -1,9 +1,21 @@
 # -*- coding: utf-8 -*-
 
-LEVEL_DEBUG, LEVEL_NORMAL, LEVEL_IMPORTANT = range(3)
+moduleLog = {
 
-logLevel = LEVEL_DEBUG
+	'Player' : True,
+	'Board' : True,
+	'Logic' : True
 
-def log(text, level = 1):
-	if level >= logLevel:
+}
+
+def log(text, module = None):
+	if module is None:
 		print text
+	elif module in moduleLog.keys():
+		if moduleLog[module]:
+			print "[%s] %s" % (module, text)
+	else:
+		raise ValueError("Unknown module %s" % module)
+
+def logBoard(boardText, module = None):
+	log("\n" + boardText, module)
