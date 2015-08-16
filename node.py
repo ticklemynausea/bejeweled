@@ -1,32 +1,29 @@
 class Node(object):
-#  def __init__(self, state, children):
-#    self.state = state
-#    self.children = children
 
   def __init__(self, board):
     self.children = []  #child nodes
     self.parent = None
     self.board = board
 
-  def addchild(self, child):
-    child.setparent(self)
-    self.children.append(child)
+  def __repr__(self):
+    outStr = ""
+    if (node.parent is None):
+      outStr += "\t" * n, "node (children: %s)" % (len(node.children))
+    else:
+      outStr += "\t" * n, "node (children: %s) (move: %s) (score: %s) (bursted: %s)" % \
+        (len(node.children), node.board.move, node.board.score, node.board.count)
 
-  def setparent(self, parent):
+    def printChildren(node, n):
+      printChild(node, n)
+      for child in node.children:
+        printChildren(child, n+1)
+
+    printChildren(self, 0)
+    return outStr
+
+  def setParent(self, parent):
     self.parent = parent
 
-  def __repr__(self):
-    def print_child(node, n):
-      if (node.parent is None):
-        print "\t" * n, "node (children: %s)" % (len(node.children))
-      else:
-        print "\t" * n, "node (children: %s) (move: %s) (score: %s) (bursted: %s)" % (len(node.children), 
-          node.board.move, node.board.score, node.board.count)
-
-    def print_children(node, n):
-      print_child(node, n)
-      for child in node.children:
-        print_children(child, n+1)
-
-    print_children(self, 0)
-    return ""
+  def addChild(self, child):
+    child.setParent(self)
+    self.children.append(child)

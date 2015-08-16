@@ -4,6 +4,7 @@ import matrix
 import random
 import copy
 import code
+import output
 
 class Board(object):
 
@@ -69,12 +70,12 @@ class Board(object):
   #until it is 'sane', and safe to use at the beginning of the game.
   def sanitize(self, verbose=True):
     if verbose:
-      print "Sanitizing board..."
+      output.log("Sanitizing board...")
 
     def testrefill(refill):
       for i in range(0, self.columns):
         for j in range(0, self.rows):
-          if (refill[0].getitem(i, j) > 0):
+          if (refill[0].getItem(i, j) > 0):
             return False
       return True
 
@@ -89,7 +90,7 @@ class Board(object):
       donesanitizing = testrefill(self.refill())
 
     if verbose:
-      print "Done sanitizing."
+      output.log("Done sanitizing.")
 
   #returns a matrix of marked patterns
   #when the same color is three or more times in a row
@@ -100,25 +101,25 @@ class Board(object):
     for i in range(0, self.columns):  #iterate thru rows
       for j in range(0, self.rows):  #iterate thru columns
         if (j - 1 >= 0) and (j + 1 <= self.rows - 1):
-          if (self.state.getitem(i,j) != 0):
-            if (self.state.getitem(i,j) == self.state.getitem(i,j + 1)):
-              if (self.state.getitem(i,j) == self.state.getitem(i,j - 1)):
-                color = self.state.getitem(i,j)
-                marked.setitem(i, j    , color)
-                marked.setitem(i, j + 1, color)
-                marked.setitem(i, j - 1, color)
+          if (self.state.getItem(i,j) != 0):
+            if (self.state.getItem(i,j) == self.state.getItem(i,j + 1)):
+              if (self.state.getItem(i,j) == self.state.getItem(i,j - 1)):
+                color = self.state.getItem(i,j)
+                marked.setItem(i, j    , color)
+                marked.setItem(i, j + 1, color)
+                marked.setItem(i, j - 1, color)
 
     #mark rows
     for i in range(0, self.columns):  #iterate thru rows
       for j in range(0, self.rows):  #iterate thru columns
         if (i - 1 >= 0) and (i + 1 <= self.columns - 1):
-          if (self.state.getitem(i,j) != 0):
-            if (self.state.getitem(i,j) == self.state.getitem(i + 1, j)):
-              if (self.state.getitem(i,j) == self.state.getitem(i - 1,j)):
-                color = self.state.getitem(i,j)
-                marked.setitem(i, j   , color)
-                marked.setitem(i + 1, j, color)
-                marked.setitem(i - 1, j, color)
+          if (self.state.getItem(i,j) != 0):
+            if (self.state.getItem(i,j) == self.state.getItem(i + 1, j)):
+              if (self.state.getItem(i,j) == self.state.getItem(i - 1,j)):
+                color = self.state.getItem(i,j)
+                marked.setItem(i, j   , color)
+                marked.setItem(i + 1, j, color)
+                marked.setItem(i - 1, j, color)
 
     return marked
 
@@ -127,13 +128,13 @@ class Board(object):
 #  def gravity_sideways(self):
 #    def shiftcolumn(column, row):
 #      for i in range(row, self.rows - 1):
-#        self.state.setitem(column, i, self.state.getitem(column, i + 1))
-#      self.state.setitem(column, self.rows - 1, 0)
+#        self.state.setItem(column, i, self.state.getItem(column, i + 1))
+#      self.state.setItem(column, self.rows - 1, 0)
 
 #    for i in range(0, self.columns):
 #      for j in range(0, self.rows):
 #        if (j+1 <= self.rows - 1):
-#          if (self.state.getitem(i, j) == 0) and (self.state.getitem(i, j + 1) != 0):
+#          if (self.state.getItem(i, j) == 0) and (self.state.getItem(i, j + 1) != 0):
 #            shiftcolumn(i, j)
 #            return False
 #    return True
@@ -154,9 +155,9 @@ class Board(object):
     for i in range(0, realrows):
       for j in range(0, realcolumns):
         if (i + 1 < realrows):
-          #print "(%s < %s) (%s < %s)" % (i+1, realrows, j, realcolumns)
-          #print len(self.state.matrix), "==", realrows
-          #print len(self.state.matrix[i+1]), "==", realcolumns
+          #output.log("(%s < %s) (%s < %s)" % (i+1, realrows, j, realcolumns))
+          #output.log(len(self.state.matrix), "==", realrows)
+          #output.log(len(self.state.matrix[i+1]), "==", realcolumns)
           if (self.state.matrix[i][j] == 0) and (self.state.matrix[i+1][j] != 0):
             shiftcolumn(i, j)
             return False
@@ -168,8 +169,8 @@ class Board(object):
     count = 0
     for i in range(0, self.columns):
       for j in range(0, self.rows):
-        if (patterns.getitem(i, j) > 0):
-          self.state.setitem(i, j, 0)
+        if (patterns.getItem(i, j) > 0):
+          self.state.setItem(i, j, 0)
           count += 1
     return (patterns, count)
 
@@ -179,7 +180,7 @@ class Board(object):
     newcolors = matrix.Matrix(self.rows, self.columns)
     for i in range(0, self.columns):  #iterate thru rows
       for j in range(0, self.rows):  #iterate thru columns
-        if (self.state.getitem(i, j) == 0):
+        if (self.state.getItem(i, j) == 0):
           count += 1
 
           if self.refillboard is None:
@@ -187,8 +188,8 @@ class Board(object):
           else:
             newcolor = self.refillboard.matrix[i][j]
 
-          newcolors.setitem(i, j, newcolor)
-          self.state.setitem(i, j, newcolor)
+          newcolors.setItem(i, j, newcolor)
+          self.state.setItem(i, j, newcolor)
 
     return (newcolors, count)
 
@@ -206,16 +207,16 @@ class Board(object):
     piece_a = move[0]
     piece_b = move[1]
 
-    temp = self.state.getitem(piece_a[0], piece_a[1])
-    self.state.setitem(piece_a[0], piece_a[1], self.state.getitem(piece_b[0], piece_b[1]))
-    self.state.setitem(piece_b[0], piece_b[1], temp)
+    temp = self.state.getItem(piece_a[0], piece_a[1])
+    self.state.setItem(piece_a[0], piece_a[1], self.state.getItem(piece_b[0], piece_b[1]))
+    self.state.setItem(piece_b[0], piece_b[1], temp)
 
   #given a board and a move, validate it. apply move, storing in the board object
   #  - the move
   #  - the score caused
   def moveandnewboard(self, move):
-    #print move
-    #print self.rows, self.columns
+    #output.log(move)
+    #output.log(self.rows, self.columns)
     #raw_input()
     board = Board(self.columns, self.rows, self.colors, self.state)
     if (board.play(move)):
@@ -245,7 +246,7 @@ class Board(object):
   def hasones(self, patterns):
     for i in range(0, self.columns):
       for j in range(0, self.rows):
-        if (patterns.getitem(i, j) > 0):
+        if (patterns.getItem(i, j) > 0):
           return True
     return False
 
