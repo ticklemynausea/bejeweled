@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import matrix
 import random
 from node import Node
@@ -15,7 +17,7 @@ class Player(object):
 
     def getPossibleBoards():
       for move in self.moves:
-        newboard = board.moveandnewboard(move)
+        newboard = board.makeMoveAndReturnNewBoard(move)
         if (newboard is not None):
           yield newboard
 

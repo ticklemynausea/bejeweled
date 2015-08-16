@@ -1,4 +1,4 @@
-# coding=UTF8
+# -*- coding: utf-8 -*-
 
 import board
 import player
@@ -106,7 +106,7 @@ class Logic(object):
   # o resto do código trata das transições entre estados
   # e passagem de argumentos
 
-  def play(self):
+  def playGame(self):
 
     def stateBegin():
 
@@ -122,7 +122,7 @@ class Logic(object):
         return True
       else:
 
-        result = self.board.play(move)
+        result = self.board.makeMove(move)
 
         output.log("Move selected: ", move)
         if result is False:
@@ -135,7 +135,7 @@ class Logic(object):
 
     def stateExplode():
       ### STATE_EXPLODE ###
-      (patterns, exploded) = self.board.explode()
+      (patterns, exploded) = self.board.explodePatterns()
       if (exploded != 0):
         if not self.shorten:
           output.log("Patterns:")
@@ -148,7 +148,7 @@ class Logic(object):
     def stateGravity():
       #STATE_GRAVITY
       gravities = 0
-      while not self.board.gravity():
+      while not self.board.simulateGravity():
         gravities += 1
       #if (gravities > 0):
       #  if not self.shorten:
@@ -156,7 +156,7 @@ class Logic(object):
       #    output.log(self.board.state)
 
     def stateRefill():
-      (refill,_) = self.board.refill()
+      (refill,_) = self.board.refillBoard()
       if not self.shorten:
         output.log("Refill:")
         output.log(refill)
@@ -204,15 +204,15 @@ class Logic(object):
           self.state = STATE_GRAVITY
         elif (self.state == STATE_GRAVITY):
           stateGravity()
-          patterns = self.board.getpatterns()
-          if self.board.hasones(patterns):
+          patterns = self.board.getPatterns()
+          if self.board.hasOnes(patterns):
             self.state = STATE_EXPLODE
           else:
             self.state = STATE_REFILL
         elif (self.state == STATE_REFILL):
           stateRefill()
-          patterns = self.board.getpatterns()
-          if self.board.hasones(patterns):
+          patterns = self.board.getPatterns()
+          if self.board.hasOnes(patterns):
             self.state = STATE_EXPLODE
           else:
             output.log("Local Chain: %s\tJewels: %s: %s\tScore: %s" % (chain, jewels, sum(jewels), score))

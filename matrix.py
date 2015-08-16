@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import random
 from termcolor import colored
 import code

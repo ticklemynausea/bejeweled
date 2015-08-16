@@ -1,5 +1,4 @@
-#!/usr/bin/python
-# coding=UTF8
+# -*- coding: utf-8 -*-
 
 import logic
 import sys
@@ -187,4 +186,4 @@ else:
             shorten = b_shorten
   )
 
-game.play()
+game.playGame()

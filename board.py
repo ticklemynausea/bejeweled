@@ -1,4 +1,4 @@
-# encoding=UTF8
+# -*- coding: utf-8 -*-
 
 import matrix
 import random
@@ -8,7 +8,6 @@ import output
 
 class Board(object):
 
-  #el inito
   def __init__(self, columns, rows, colors, state = None):
     self.rows = rows
     self.columns = columns
@@ -72,7 +71,7 @@ class Board(object):
     if verbose:
       output.log("Sanitizing board...")
 
-    def testrefill(refill):
+    def testrefillBoard(refill):
       for i in range(0, self.columns):
         for j in range(0, self.rows):
           if (refill[0].getItem(i, j) > 0):
@@ -84,17 +83,17 @@ class Board(object):
     while not donesanitizing:
       donegravity = False
       while not donegravity:
-        self.explode()
-        donegravity = self.gravity()
+        self.explodePatterns()
+        donegravity = self.simulateGravity()
 
-      donesanitizing = testrefill(self.refill())
+      donesanitizing = testrefillBoard(self.refillBoard())
 
     if verbose:
       output.log("Done sanitizing.")
 
   #returns a matrix of marked patterns
   #when the same color is three or more times in a row
-  def getpatterns(self):
+  def getPatterns(self):
     marked = matrix.Matrix(self.rows, self.columns)
 
     #mark columns
@@ -126,7 +125,7 @@ class Board(object):
   #simulate gravity (returns True when there's nothing left to fall)
   #must be called several times until it returns True.
 #  def gravity_sideways(self):
-#    def shiftcolumn(column, row):
+#    def shiftColumn(column, row):
 #      for i in range(row, self.rows - 1):
 #        self.state.setItem(column, i, self.state.getItem(column, i + 1))
 #      self.state.setItem(column, self.rows - 1, 0)
@@ -135,19 +134,19 @@ class Board(object):
 #      for j in range(0, self.rows):
 #        if (j+1 <= self.rows - 1):
 #          if (self.state.getItem(i, j) == 0) and (self.state.getItem(i, j + 1) != 0):
-#            shiftcolumn(i, j)
+#            shiftColumn(i, j)
 #            return False
 #    return True
 
   #simulate gravity (returns True when there's nothing left to fall)
   #must be called several times until it returns True.
 
-  def gravity(self):
+  def simulateGravity(self):
 
     realrows = self.columns
     realcolumns = self.rows
 
-    def shiftcolumn(row, column):
+    def shiftColumn(row, column):
       for i in range(row, realrows - 1):
         self.state.matrix[i][column] = self.state.matrix[i+1][column]
       self.state.matrix[realrows - 1][column] = 0
@@ -159,13 +158,13 @@ class Board(object):
           #output.log(len(self.state.matrix), "==", realrows)
           #output.log(len(self.state.matrix[i+1]), "==", realcolumns)
           if (self.state.matrix[i][j] == 0) and (self.state.matrix[i+1][j] != 0):
-            shiftcolumn(i, j)
+            shiftColumn(i, j)
             return False
     return True
 
   #removes all patterned pieces, returning a tuple with all patterns and their count
-  def explode(self):
-    patterns = self.getpatterns()
+  def explodePatterns(self):
+    patterns = self.getPatterns()
     count = 0
     for i in range(0, self.columns):
       for j in range(0, self.rows):
@@ -175,7 +174,7 @@ class Board(object):
     return (patterns, count)
 
   #refills a board with gaps
-  def refill(self):
+  def refillBoard(self):
     count = 0
     newcolors = matrix.Matrix(self.rows, self.columns)
     for i in range(0, self.columns):  #iterate thru rows
@@ -194,16 +193,16 @@ class Board(object):
     return (newcolors, count)
 
   #tries to make a move. returns True if it applies, False if it doesn't
-  def play(self, move):
-    if (self.validate(move)):
-      self.applymove(move)
+  def makeMove(self, move):
+    if (self.validateMove(move)):
+      self.applyMove(move)
       return True
     else:
       return False
 
   #manipulates the board directly.
   #should be inside matrix class but whatever
-  def applymove(self, move):
+  def applyMove(self, move):
     piece_a = move[0]
     piece_b = move[1]
 
@@ -214,19 +213,19 @@ class Board(object):
   #given a board and a move, validate it. apply move, storing in the board object
   #  - the move
   #  - the score caused
-  def moveandnewboard(self, move):
+  def makeMoveAndReturnNewBoard(self, move):
     #output.log(move)
     #output.log(self.rows, self.columns)
     #raw_input()
     board = Board(self.columns, self.rows, self.colors, self.state)
-    if (board.play(move)):
+    if (board.makeMove(move)):
       count = 0
       score = 0
       chain = -1
       donechaining = False #FAIL
       while not donechaining:
-        (patterns, exploded) = board.explode()
-        while not board.gravity():
+        (patterns, exploded) = board.explodePatterns()
+        while not board.simulateGravity():
           pass
 
         if (exploded == 0):
@@ -243,7 +242,7 @@ class Board(object):
     else:
       return None
 
-  def hasones(self, patterns):
+  def hasOnes(self, patterns):
     for i in range(0, self.columns):
       for j in range(0, self.rows):
         if (patterns.getItem(i, j) > 0):
@@ -251,8 +250,8 @@ class Board(object):
     return False
 
   #validates a move. returns True/False
-  def validate(self, move):
+  def validateMove(self, move):
     newboard = Board(self.columns, self.rows, self.colors, self.state)
-    newboard.applymove(move)
-    patterns = newboard.getpatterns()
-    return self.hasones(patterns)
+    newboard.applyMove(move)
+    patterns = newboard.getPatterns()
+    return self.hasOnes(patterns)
