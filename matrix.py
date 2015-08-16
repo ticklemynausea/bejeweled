@@ -1,34 +1,66 @@
 # -*- coding: utf-8 -*-
 
 import random
-from termcolor import colored
-import code
+import os
+
+def colored(text, color = None, background = None, attributes = None):
+
+  COLORS = {
+    1 : 31,
+    2 : 34,
+    3 : 32,
+    4 : 33,
+    5 : 36,
+    6 : 35,
+    7 : 37,
+    8 : 137,
+  }
+
+  HIGHLIGHTS = {
+    1 : 41,
+    2 : 44,
+    3 : 42,
+    4 : 43,
+    5 : 46,
+    6 : 45,
+    7 : 47,
+  }
+
+  ATTRIBUTES = {
+         'bold' : 1,
+         'dark' : 2,
+             '' : 3,
+     'underline': 4,
+        'blink' : 5,
+             '' : 6,
+      'reverse' : 7,
+    'concealed' : 8
+  }
+
+
+  if os.getenv('ANSI_COLORS_DISABLED') is None:
+      fmt_str = '\033[%dm%s'
+
+      if color is not None:
+          text = fmt_str % (COLORS[color], text)
+
+      if background is not None:
+          text = fmt_str % (HIGHLIGHTS[background], text)
+
+      if attributes is not None:
+          for attr in attributes:
+              text = fmt_str % (ATTRIBUTES[attr], text)
+
+      text += '\033[0m'
+
+  return text
+
 
 class Matrix(object):
 
   __slots__ = [
     'cols', 'rows', 'matrix'
   ]
-
-  cmap = {
-    1 : 'red',
-    2 : 'blue',
-    3 : 'green',
-    4 : 'yellow',
-    5 : 'cyan',
-    6 : 'magenta',
-    7 : 'white'
-  }
-
-  bmap = {
-    1 : 'on_red',
-    2 : 'on_blue',
-    3 : 'on_green',
-    4 : 'on_yellow',
-    5 : 'on_cyan',
-    6 : 'on_magenta',
-    7 : 'on_white'
-  }
 
   @staticmethod
   def CopyMatrix(matrix):
@@ -63,20 +95,26 @@ class Matrix(object):
 
   def reprConsole(self):
     outStr = ""
+
+    outStr += "    "
+    for i in range(0, self.cols):
+      outStr += "%s " % (i % 10)
+    outStr += "\n"
+
     for i in range(self.rows-1, -1, -1):
-      outStr += "%s [" % i
+      outStr += "%s [" % (i % 10)
       l = len(self.matrix[i])
       for j in range(l):
         c = self.matrix[i][j]
         if c == 0:
           outStr += "  "
         else:
-          outStr += colored("%s " % c, self.cmap[c], self.bmap[c])
+          outStr += colored("%s " % c, c, c)
 
-      outStr += "]\n"
-    outStr += "   "
+      outStr += "] %s\n" % (i % 10)
+    outStr += "    "
     for i in range(0, self.cols):
-      outStr += "%s " % i
+      outStr += "%s " % (i % 10)
     outStr += "\n"
     return outStr
 
@@ -100,12 +138,12 @@ class Matrix(object):
           if c == 0:
             outStr += "!!"
           else:
-            outStr += colored("!!", 'white', self.bmap[c], ['bold'])
+            outStr += colored("!!", 7, c, ['bold'])
         else:
           if c == 0:
             outStr += "  "
           else:
-            outStr += colored("%s " % c, self.cmap[c], self.bmap[c])
+            outStr += colored("%s " % c, c, c)
       outStr += "]\n"
 
     outStr += "   "

@@ -8,14 +8,14 @@ moduleLog = {
 
 }
 
-def log(text, module = None):
+def log(text, module = None, printModule = True):
 	if module is None:
 		print text
 	elif module in moduleLog.keys():
 		if moduleLog[module]:
-			print "[%s] %s" % (module, text)
+			if printModule:
+				print "[%s] %s" % (module, text)
+			else:
+				print "%s" % (text)
 	else:
 		raise ValueError("Unknown module %s" % module)
-
-def logBoard(boardText, module = None):
-	log("\n" + boardText, module)

@@ -113,7 +113,8 @@ class Logic(object):
       output.log("***********************", module = 'Logic')
       output.log("* begin iteration %s " %  self.iteration, module = 'Logic')
       output.log("***********************", module = 'Logic')
-      output.logBoard(self.board.state, module = 'Logic')
+      output.log("Board:", module = 'Logic' )
+      output.log(self.board.state, module = 'Logic', printModule = False)
 
     def stateMove():
       move = self.player.getMove(self.board)
@@ -128,7 +129,7 @@ class Logic(object):
             output.log("Player asked me to perform an invalid move.", module = 'Logic')
             output.log("Probably he is a path follower. Please ignore this.", module = 'Logic')
         else:
-          output.log(self.board.state.reprConsoleMarkMoves(list(move)), module = 'Logic')
+          output.log(self.board.state.reprConsoleMarkMoves(list(move)), module = 'Logic', printModule = False)
 
         return False
 
@@ -138,9 +139,9 @@ class Logic(object):
       if (exploded != 0):
         if not self.shorten:
           output.log("Patterns:", module = 'Logic')
-          output.log(patterns, module = 'Logic')
+          output.log(patterns, module = 'Logic', printModule = False)
           #output.log("Board state: before gravity", module = 'Logic')
-          #output.log(self.board.state, module = 'Logic')
+          #output.log(self.board.state, module = 'Logic', printModule = False)
 
       return exploded
 
@@ -152,15 +153,15 @@ class Logic(object):
       #if (gravities > 0):
       #  if not self.shorten:
       #    output.log("Board state: after gravity", module = 'Logic')
-      #    output.log(self.board.state, module = 'Logic')
+      #    output.log(self.board.state, module = 'Logic', printModule = False)
 
     def stateRefill():
       (refill,_) = self.board.refillBoard()
       if not self.shorten:
         output.log("Refill:", module = 'Logic')
-        output.log(refill, module = 'Logic')
+        output.log(refill, module = 'Logic', printModule = False)
         output.log("Refilled:", module = 'Logic')
-        output.log(self.board.state, module = 'Logic')
+        output.log(self.board.state, module = 'Logic', printModule = False)
 
     self.iteration = 1
     count = 0
@@ -186,7 +187,7 @@ class Logic(object):
           result = stateMove()
           if result:
             output.log("Terminal state achieved in iteration %s.\nScore: %s: " % (self.iteration, self.player.score), module = 'Logic')
-            output.log(self.board.state, module = 'Logic')
+            output.log(self.board.state, module = 'Logic', printModule = False)
             self.state = STATE_TERMINATE
             break
 
@@ -232,4 +233,4 @@ class Logic(object):
     output.log("* Total Chain: %s\tJewels: %s\tScore: %s" % (totalchain, totalcount, self.player.score), module = 'Logic')
     output.log("****************************************************************", module = 'Logic')
 
-    return (self.iteration-1,totalchain, totalcount, self.player.score)
+    return (self.iteration - 1, totalchain, totalcount, self.player.score)
