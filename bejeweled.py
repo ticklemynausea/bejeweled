@@ -62,7 +62,7 @@ parser.add_option(
     type = "int",
     dest = "limit",
     help = "Limits the number of iterations to LIMIT. Default is %default.",
- default = 20000
+ default = 0
 )
 
 group_player = OptionGroup(parser, "Player Agent Settings")

@@ -95,18 +95,20 @@ class Logic(object):
     output.log("* Welcome to AI Bejeweled", module = 'Logic')
     output.log("* Rules:", module = 'Logic')
     if boardfile is not None:
-      output.log("*\tUsing board from %s and refill from %s " % (boardfile, refillfile), module = 'Logic')
-    output.log("*\t%sx%sx%s (%s possible moves)" % (self.board.columns, self.board.rows, self.board.colors, len(self.moves)), module = 'Logic')
-    output.log("*\tUsing IA Agent %s " % self.player, module = 'Logic')
-    output.log("*\tWill terminate after %s moves" % (self.limit), module = 'Logic')
+      output.log("*  Using board from %s and refill from %s " % (boardfile, refillfile), module = 'Logic')
+    output.log("*  %sx%sx%s (%s possible moves)" % (self.board.columns, self.board.rows, self.board.colors, len(self.moves)), module = 'Logic')
+    output.log("*  Using IA Agent %s " % self.player, module = 'Logic')
+    if self.limit > 0:
+      output.log("*  Will terminate after %s moves" % (self.limit), module = 'Logic')
     output.log("**************************************", module = 'Logic')
 
-  # método play implementa a logica de jogo como uma máquina de estados.
-  # os sub métodos são o código implementado por cada estado
-  # o resto do código trata das transições entre estados
-  # e passagem de argumentos
+  # the playGame method implements the game logic using a state machine
+  # each state_* method defined inside playGame implements the code in each state
+  # the method body code does the transitions between states
 
   def playGame(self):
+
+    STATE_BEGIN, STATE_MOVE, STATE_EXPLODE, STATE_GRAVITY, STATE_REFILL, STATE_TERMINATE = range(6)
 
     def stateBegin():
 
@@ -115,6 +117,8 @@ class Logic(object):
       output.log("***********************", module = 'Logic')
       output.log("Board:", module = 'Logic' )
       output.log(self.board.state, module = 'Logic', printModule = False)
+
+      return STATE_MOVE
 
     def stateMove():
       move = self.player.getMove(self.board)
@@ -134,7 +138,7 @@ class Logic(object):
         return False
 
     def stateExplode():
-      ### STATE_EXPLODE ###
+
       (patterns, exploded) = self.board.explodePatterns()
       if (exploded != 0):
         if not self.shorten:
@@ -146,11 +150,11 @@ class Logic(object):
       return exploded
 
     def stateGravity():
-      #STATE_GRAVITY
-      gravities = 0
+
+      fallCount = 0
       while not self.board.simulateGravity():
-        gravities += 1
-      #if (gravities > 0):
+        fallCount += 1
+      #if (fallCount > 0):
       #  if not self.shorten:
       #    output.log("Board state: after gravity", module = 'Logic')
       #    output.log(self.board.state, module = 'Logic', printModule = False)
@@ -170,13 +174,10 @@ class Logic(object):
     totalchain = 0
     score = 0
 
-    #STATES
-    STATE_BEGIN, STATE_MOVE, STATE_EXPLODE, STATE_GRAVITY, STATE_REFILL, STATE_TERMINATE = range(6)
-
     while self.iteration <= self.limit or self.limit == 0:
-      stateBegin()
 
-      self.state = STATE_MOVE
+      self.state = stateBegin()
+
       while self.state != STATE_BEGIN:
         if (self.state == STATE_MOVE):
 
