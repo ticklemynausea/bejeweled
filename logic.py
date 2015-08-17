@@ -62,15 +62,18 @@ class Logic(object):
     self.minenergy = kwargs.get('minenergy', 2)
     self.energythreshold = kwargs.get('energythreshold')
 
-    boardfile = kwargs.get('boardfile', None)
-    refillfile = kwargs.get('refillfile', None)
+    self.boardfile = kwargs.get('boardfile', None)
+    self.refillfile = kwargs.get('refillfile', None)
 
     # Human Player
     self.name = None
     self.inputStream = sys.stdin
 
+    # Main loop terminates when this is set True
+    self.forceEnd = False
+
     # generate a new game
-    if boardfile is None:
+    if self.boardfile is None:
       columns = kwargs.get('columns')
       rows = kwargs.get('rows')
       colours = kwargs.get('colours')
@@ -81,8 +84,8 @@ class Logic(object):
     # load a saved board
     else:
       try:
-        self.board = board.Board.LoadBoard(boardfile)
-        self.board.refillboard = board.Board.LoadRefill(refillfile)
+        self.board = board.Board.LoadBoard(self.boardfile)
+        self.board.refillboard = board.Board.LoadRefill(self.refillfile)
       except Exception as e:
         output.log("Error: ", e, module = 'Logic')
         sys.exit(0)
@@ -90,17 +93,6 @@ class Logic(object):
       self.moves = getListOfPossibleMoves(self.board.rows, self.board.columns)
 
     self.player  = getPlayer(kwargs.get('player'))
-
-    output.log("**************************************", module = 'Logic')
-    output.log("* Welcome to AI Bejeweled", module = 'Logic')
-    output.log("* Rules:", module = 'Logic')
-    if boardfile is not None:
-      output.log("*  Using board from %s and refill from %s " % (boardfile, refillfile), module = 'Logic')
-    output.log("*  %sx%sx%s (%s possible moves)" % (self.board.columns, self.board.rows, self.board.colors, len(self.moves)), module = 'Logic')
-    output.log("*  Using IA Agent %s " % self.player, module = 'Logic')
-    if self.limit > 0:
-      output.log("*  Will terminate after %s moves" % (self.limit), module = 'Logic')
-    output.log("**************************************", module = 'Logic')
 
   # the playGame method implements the game logic using a state machine
   # each state_* method defined inside playGame implements the code in each state
@@ -144,8 +136,8 @@ class Logic(object):
         if not self.shorten:
           output.log("Patterns:", module = 'Logic')
           output.log(patterns, module = 'Logic', printModule = False)
-          #output.log("Board state: before gravity", module = 'Logic')
-          #output.log(self.board.state, module = 'Logic', printModule = False)
+          output.log("Board state: before gravity", module = 'Logic')
+          output.log(self.board.state, module = 'Logic', printModule = False)
 
       return exploded
 
@@ -154,10 +146,11 @@ class Logic(object):
       fallCount = 0
       while not self.board.simulateGravity():
         fallCount += 1
-      #if (fallCount > 0):
-      #  if not self.shorten:
-      #    output.log("Board state: after gravity", module = 'Logic')
-      #    output.log(self.board.state, module = 'Logic', printModule = False)
+
+      if (fallCount > 0):
+        if not self.shorten:
+          output.log("Board state: after gravity", module = 'Logic')
+          output.log(self.board.state, module = 'Logic', printModule = False)
 
     def stateRefill():
       (refill,_) = self.board.refillBoard()
@@ -167,14 +160,14 @@ class Logic(object):
         output.log("Refilled:", module = 'Logic')
         output.log(self.board.state, module = 'Logic', printModule = False)
 
-    self.iteration = 1
     count = 0
     chain = 0
     totalcount = 0
     totalchain = 0
     score = 0
 
-    while self.iteration <= self.limit or self.limit == 0:
+    self.iteration = 1
+    while not self.forceEnd and (self.iteration <= self.limit or self.limit == 0):
 
       self.state = stateBegin()
 
@@ -193,6 +186,7 @@ class Logic(object):
             break
 
           self.state = STATE_EXPLODE
+
         elif (self.state == STATE_EXPLODE):
           exploded = stateExplode()
           count += exploded
@@ -203,6 +197,7 @@ class Logic(object):
           self.lastscore = self.player.updateScore(exploded, chain)
           score += self.lastscore
           self.state = STATE_GRAVITY
+
         elif (self.state == STATE_GRAVITY):
           stateGravity()
           patterns = self.board.getPatterns()
@@ -210,6 +205,7 @@ class Logic(object):
             self.state = STATE_EXPLODE
           else:
             self.state = STATE_REFILL
+
         elif (self.state == STATE_REFILL):
           stateRefill()
           patterns = self.board.getPatterns()
@@ -228,10 +224,12 @@ class Logic(object):
       if (self.pauses):
         raw_input("Press enter to continue.")
 
-    output.log("****************************************************************", module = 'Logic')
-    output.log("* Simulation terminated after %s moves" % (self.iteration - 1), module = 'Logic')
-    output.log("****************************************************************", module = 'Logic')
-    output.log("* Total Chain: %s\tJewels: %s\tScore: %s" % (totalchain, totalcount, self.player.score), module = 'Logic')
-    output.log("****************************************************************", module = 'Logic')
+    return {
+      'iterations' : self.iteration - 1,
+      'totalChains' : totalchain,
+      'totalJewels' : totalcount,
+      'score' : self.player.score
+    }
 
-    return (self.iteration - 1, totalchain, totalcount, self.player.score)
+  def endGame(self):
+    self.forceEnd = True

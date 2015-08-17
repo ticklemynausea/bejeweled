@@ -3,6 +3,8 @@
 import logic
 import sys
 import board
+import output
+import signal
 from optparse import OptionParser, OptionGroup
 
 
@@ -187,4 +189,29 @@ else:
             shorten = b_shorten
   )
 
-game.playGame()
+
+# handle ^C
+def handle_SIGINT(signal, frame):
+  print('You pressed Ctrl+C!')
+  game.endGame()
+
+signal.signal(signal.SIGINT, handle_SIGINT)
+
+output.log("**************************************", module = 'Main')
+output.log("* Welcome to AI Bejeweled", module = 'Main')
+output.log("* Rules:", module = 'Logic')
+if game.boardfile is not None:
+  output.log("*  Using board from %s and refill from %s " % (game.boardfile, game.refillfile), module = 'Main')
+output.log("*  %sx%sx%s (%s possible moves)" % (game.board.columns, game.board.rows, game.board.colors, len(game.moves)), module = 'Main')
+output.log("*  Using IA Agent %s " % game.player, module = 'Main')
+if game.limit > 0:
+  output.log("*  Will terminate after %s moves" % (game.limit), module = 'Main')
+output.log("**************************************", module = 'Main')
+
+results = game.playGame()
+
+output.log("****************************************************************", module = 'Main')
+output.log("* Simulation terminated after %s moves" % results['iterations'], module = 'Main')
+output.log("****************************************************************", module = 'Main')
+output.log("* Chains: %s\tJewels: %s\tScore: %s" % (results['totalChains'], results['totalJewels'], results['score']), module = 'Main')
+output.log("****************************************************************", module = 'Main')

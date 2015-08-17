@@ -2,6 +2,7 @@
 
 moduleLog = {
 
+	'Main' : True,
 	'Player' : True,
 	'Board' : True,
 	'Logic' : True
@@ -14,7 +15,7 @@ def log(text, module = None, printModule = True):
 	elif module in moduleLog.keys():
 		if moduleLog[module]:
 			if printModule:
-				print "[%s] %s" % (module, text)
+				print "[ %s ] %s" % (module.ljust(6), text)
 			else:
 				print "%s" % (text)
 	else:
