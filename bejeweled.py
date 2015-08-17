@@ -109,7 +109,7 @@ group_player.add_option(
 
 group_player.add_option(
   "--energythreshold",
-  action = "store", 
+  action = "store",
     type = "int",
     dest = "energythreshold",
     help = "Energy threshold level used by EnergyVSEntropy agents. Default is %default",
@@ -124,17 +124,17 @@ b_pause = options.pause
 b_shorten = options.shorten
 
 if options.generate:
-  b_rows = options.generate[0]
-  b_cols = options.generate[1]
-  b_colours = options.generate[2]
+    b_rows = options.generate[0]
+    b_cols = options.generate[1]
+    b_colours = options.generate[2]
 
-  b = board.Board(columns = b_cols, rows = b_rows, colors = b_colours)
-  b.sanitize(False)
+    b = board.Board(columns = b_cols, rows = b_rows, colors = b_colours)
+    b.sanitize(False)
 
-  for line in b.state.matrix:
-    print line.__repr__().replace(' ', '').replace('[', '').replace(']', '')
+    for line in b.state.matrix:
+        print line.__repr__().replace(' ', '').replace('[', '').replace(']', '')
 
-  sys.exit(0)
+    sys.exit(0)
 
 #
 # start game with given options
@@ -146,54 +146,54 @@ b_minenergy = options.minenergy
 b_energythreshold = options.energythreshold
 
 if b_player in ["BestEnergy", "BestScoreBetterEnergy", "EnergyVSEntropy", "EnergyVSEntropyReversed"] and b_depth <= 1:
-  print "%s can only be used with a depth level of at least 2" % b_player
-  sys.exit(0)
-
-if options.filename:
-
-  b_boardfile = options.filename[0]
-  b_refillfile = options.filename[1]
-
-  game = logic.Logic(
-          boardfile = b_boardfile,
-         refillfile = b_refillfile,
-              limit = b_limit,
-             player = b_player,
-              depth = b_depth,
-          minenergy = b_minenergy,
-              pause = b_pause,
-    energythreshold = b_energythreshold,
-            shorten = b_shorten
-  )
-
-else:
-
-  b_rows = options.size[0]
-  b_cols = options.size[1]
-  b_colours = options.size[2]
-
-  if b_player in ["BestEnergy", "BestScoreBetterEnergy", "EnergyVSEntropy", "EnergyVSEntropyReversed"] and b_depth <= 1:
     print "%s can only be used with a depth level of at least 2" % b_player
     sys.exit(0)
 
-  game = logic.Logic(
-              limit = b_limit,
-             player = b_player,
-            columns = b_cols,
-               rows = b_rows,
-            colours = b_colours,
-              depth = b_depth,
-          minenergy = b_minenergy,
-              pause = b_pause,
-    energythreshold = b_energythreshold,
-            shorten = b_shorten
-  )
+if options.filename:
+
+    b_boardfile = options.filename[0]
+    b_refillfile = options.filename[1]
+
+    game = logic.Logic(
+            boardfile = b_boardfile,
+           refillfile = b_refillfile,
+                limit = b_limit,
+               player = b_player,
+                depth = b_depth,
+            minenergy = b_minenergy,
+                pause = b_pause,
+      energythreshold = b_energythreshold,
+              shorten = b_shorten
+    )
+
+else:
+
+    b_rows = options.size[0]
+    b_cols = options.size[1]
+    b_colours = options.size[2]
+
+    if b_player in ["BestEnergy", "BestScoreBetterEnergy", "EnergyVSEntropy", "EnergyVSEntropyReversed"] and b_depth <= 1:
+        print "%s can only be used with a depth level of at least 2" % b_player
+        sys.exit(0)
+
+    game = logic.Logic(
+                limit = b_limit,
+               player = b_player,
+              columns = b_cols,
+                 rows = b_rows,
+              colours = b_colours,
+                depth = b_depth,
+            minenergy = b_minenergy,
+                pause = b_pause,
+      energythreshold = b_energythreshold,
+              shorten = b_shorten
+    )
 
 
 # handle ^C
 def handle_SIGINT(signal, frame):
-  print('You pressed Ctrl+C!')
-  game.endGame()
+    print('You pressed Ctrl+C!')
+    game.endGame()
 
 signal.signal(signal.SIGINT, handle_SIGINT)
 
@@ -201,11 +201,11 @@ output.log("**************************************", module = 'Main')
 output.log("* Welcome to AI Bejeweled", module = 'Main')
 output.log("* Rules:", module = 'Logic')
 if game.boardfile is not None:
-  output.log("*  Using board from %s and refill from %s " % (game.boardfile, game.refillfile), module = 'Main')
+    output.log("*  Using board from %s and refill from %s " % (game.boardfile, game.refillfile), module = 'Main')
 output.log("*  %sx%sx%s (%s possible moves)" % (game.board.columns, game.board.rows, game.board.colors, len(game.moves)), module = 'Main')
 output.log("*  Using IA Agent %s " % game.player, module = 'Main')
 if game.limit > 0:
-  output.log("*  Will terminate after %s moves" % (game.limit), module = 'Main')
+    output.log("*  Will terminate after %s moves" % (game.limit), module = 'Main')
 output.log("**************************************", module = 'Main')
 
 results = game.playGame()
