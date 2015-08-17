@@ -104,11 +104,10 @@ class Logic(object):
 
     def stateBegin():
 
-      output.log("***********************", module = 'Logic')
-      output.log("* begin iteration %s " %  self.iteration, module = 'Logic')
-      output.log("***********************", module = 'Logic')
-      output.log("Board:", module = 'Logic' )
-      output.log(self.board.state, module = 'Logic', printModule = False)
+      output.event('logic_stateBegin', {
+        'iteration' : self.iteration,
+        'board_state' : self.board.state
+      })
 
       return STATE_MOVE
 
@@ -119,25 +118,25 @@ class Logic(object):
         return True
       else:
 
-        output.log("Move selected: %s " % str(move), module = 'Logic')
-        output.log(self.board.state.reprConsoleMarkMoves(list(move)), module = 'Logic', printModule = False)
         result = self.board.makeMove(move)
 
-        if result is False:
-            output.log("Player asked me to perform an invalid move.", module = 'Logic')
-            output.log("Probably he is a human. Doing nothing.", module = 'Logic')
-
+        output.event('logic_stateMove', {
+          'move' : str(move),
+          'marked_board' : self.board.state.reprConsoleMarkMoves(list(move)),
+          'move_result' : result
+        })
         return False
 
     def stateExplode():
 
       (patterns, exploded) = self.board.explodePatterns()
-      if (exploded != 0):
-        if not self.shorten:
-          output.log("Patterns:", module = 'Logic')
-          output.log(patterns, module = 'Logic', printModule = False)
-          output.log("Board state: before gravity", module = 'Logic')
-          output.log(self.board.state, module = 'Logic', printModule = False)
+
+      output.event('logic_stateExplode', {
+        'patterns' : patterns,
+        'exploded' : exploded,
+        'board_state' : self.board.state,
+        'shorten' : self.shorten
+      })
 
       return exploded
 
@@ -147,18 +146,20 @@ class Logic(object):
       while not self.board.simulateGravity():
         fallCount += 1
 
-      if (fallCount > 0):
-        if not self.shorten:
-          output.log("Board state: after gravity", module = 'Logic')
-          output.log(self.board.state, module = 'Logic', printModule = False)
+      output.event('logic_stateGravity', {
+        'board_state' : self.board.state,
+        'fall_count' : fallCount,
+        'shorten' : self.shorten
+      })
 
     def stateRefill():
       (refill,_) = self.board.refillBoard()
-      if not self.shorten:
-        output.log("Refill:", module = 'Logic')
-        output.log(refill, module = 'Logic', printModule = False)
-        output.log("Refilled:", module = 'Logic')
-        output.log(self.board.state, module = 'Logic', printModule = False)
+
+      output.event('logic_stateRefill', {
+        'board_state' : self.board.state,
+        'refill' : refill,
+        'shorten' : self.shorten
+      })
 
     count = 0
     chain = 0
@@ -178,9 +179,10 @@ class Logic(object):
           chain = -1
           score = 0
           jewels = []
+
           result = stateMove()
           if result:
-            output.log("Terminal state achieved in iteration %s.\nScore: %s: " % (self.iteration, self.player.score), module = 'Logic')
+            output.log("Terminal state achieved in iteration %s. Score: %s." % (self.iteration, self.player.score), module = 'Logic')
             output.log(self.board.state, module = 'Logic', printModule = False)
             self.state = STATE_TERMINATE
             break

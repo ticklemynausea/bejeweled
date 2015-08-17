@@ -23,7 +23,6 @@ class Board(object):
       self.state = matrix.Matrix(self.rows, self.columns, self.colors)
     else:
       self.state = matrix.Matrix.CopyMatrix(state.matrix)
-      #self.state = copy.deepcopy(state)
 
   @staticmethod
   def LoadBoard(filename):
